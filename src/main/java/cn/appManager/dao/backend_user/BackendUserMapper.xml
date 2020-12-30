@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.appManager.dao.backend_user.BackendUserMapper">
+    <!--根据用户编号获取用户对象-->
+    <select id="getUserByUserCode" parameterType="string" resultType="backendUser">
+        select * from backend_user where userCode = #{userCode}
+    </select>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.appManager.dao.app_version.VersionMapper">
+    <!--查询app下的所有version信息-->
+    <select id="getVersionListByAppId" resultMap="versionDetails">
+        select *,
+        (select softwareName from app_info where app_version.appId=app_info.id) as softwareName,
+        (select valueName from data_dictionary where data_dictionary.valueId=app_version.publishStatus) as publishStatusName
+        from app_version where appId = #{appId} order by id desc
+    </select>
+    <!--查询App下的版本信息数-->
+    <select id="getVersionCountByAppId" parameterType="int" resultType="int">
+        select count(1)
+        from app_version where appId = #{appId}
+    </select>
+    <!--查询App下的最新版本-->
+    <select id="getNewVersionByAppId" resultMap="versionDetails">
+         select *,
+        (select softwareName from app_info where app_version.appId=app_info.id) as softwareName,
+        (select valueName from data_dictionary where data_dictionary.valueId=app_version.publishStatus) as publishStatusName
+        from app_version where appId = #{appId} order by id desc limit 1
+    </select>
+
+    <!--保存一个version信息-->
+    <insert id="saveVersion" parameterType="appVersion" useGeneratedKeys="true" keyProperty="id">
+        insert into app_version(appId, versionNo, versionInfo, publishStatus, downloadLink, versionSize, createdBy,
+        creationDate, apkLocPath, apkFileName) values (#{appId},#{versionNo},#{versionInfo},#{publishStatus},#{downloadLink}
+        ,#{versionSize},#{createdBy},#{creationDate},#{apkLocPath},#{apkFileName})
+    </insert>
+
+    <!--修改version信息-->
+    <update id="modifyVersion" parameterType="appVersion">
+        update app_version set appId=#{appId}, versionNo=#{versionNo}, versionInfo=#{versionInfo}, publishStatus=#{publishStatus}
+        , downloadLink=#{downloadLink}, versionSize=#{versionSize}, modifyDate=#{modifyDate}, modifyBy=#{modifyBy}, apkLocPath=#{apkLocPath}
+        , apkFileName=#{apkFileName} where id=#{id}
+    </update>
+
+    <!--删除App下的versions-->
+    <delete id="deleteVersionsByAppId" parameterType="int">
+        delete from app_version where appId=#{appId}
+    </delete>
+
+    <!--包含了软件名和发布状态的version信息-->
+    <resultMap id="versionDetails" type="appVersion" autoMapping="true">
+        <id property="id" column="id"/>
+        <result property="publishStatusName" column="publishStatusName"/>
+        <result property="softwareName" column="softwareName"/>
+    </resultMap>
+</mapper>

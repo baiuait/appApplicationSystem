@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.appManager.dao.app_info.AppInfoMapper">
+    <!--查询APP信息列表(分页)-->
+    <select id="getAppInfoList" resultMap="infoDetails">
+        <include refid="getAppSelect"/>
+        from app_info
+        <include refid="getListWhere"/>
+        order by id desc
+        limit #{currentPageNo},#{pageSize}
+    </select>
+    <!--获取符合条件的APP个数-->
+    <select id="getAppInfoCount" resultType="int">
+        select count(1) from app_info
+        <include refid="getListWhere"/>
+    </select>
+    <!--查询编号对应的APP-->
+    <select id="getAppInfoById" resultMap="infoDetails">
+        <include refid="getAppSelect"/>
+        from app_info where id = #{id}
+    </select>
+
+    <!--添加AppInfo信息-->
+    <insert id="saveAppInfo" parameterType="appInfo">
+        insert into app_info(softwareName, APKName, supportROM, interfaceLanguage, softwareSize, devId, appInfo, status,
+        flatformId, categoryLevel3, categoryLevel2, categoryLevel1, downloads, createdBy, creationDate, logoPicPath, logoLocPath)
+        values (#{softwareName},#{APKName},#{supportROM},#{interfaceLanguage},#{softwareSize},#{devId},#{appInfo},#{status},#{flatformId},
+        #{categoryLevel3},#{categoryLevel2},#{categoryLevel1},#{downloads},#{createdBy},#{creationDate},#{logoPicPath},#{logoLocPath})
+    </insert>
+
+    <!--修改AppInfo信息-->
+    <update id="modifyAppInfoById" parameterType="appInfo">
+        update app_info set softwareName=#{softwareName}, APKName=#{APKName}, supportROM=#{supportROM}, interfaceLanguage=#{interfaceLanguage},
+        softwareSize=#{softwareSize}, appInfo=#{appInfo}, status=#{status},flatformId=#{flatformId}, categoryLevel3=#{categoryLevel3},
+        categoryLevel2=#{categoryLevel2}, categoryLevel1=#{categoryLevel1}, downloads=#{downloads}, modifyBy=#{modifyBy},
+        modifyDate=#{modifyDate}, logoPicPath=#{logoPicPath}, logoLocPath=#{logoLocPath} where id = #{id}
+    </update>
+    <!--修改App版本信息-->
+    <update id="modifyAppVersionById">
+        update app_info set versionId = #{appVersion} where id = #{id}
+    </update>
+    <!--修改App状态-->
+    <update id="modifyAppStatusById">
+        update app_info set status = #{status} where id = #{id}
+    </update>
+
+    <!--删除AppInfo-->
+    <delete id="deleteAppInfoById" parameterType="int">
+        delete from app_info where id=#{id}
+    </delete>
+
+    <!--查询SQL语句select封装-->
+    <sql id="getAppSelect">
+        SELECT * ,
+        (SELECT categoryName FROM app_category WHERE id = app_info.`categoryLevel1`) AS category1Name,
+        (SELECT categoryName FROM app_category WHERE id = app_info.`categoryLevel2`) AS category2Name,
+        (SELECT categoryName FROM app_category WHERE id = app_info.`categoryLevel3`) AS category3Name,
+        (SELECT valueName FROM data_dictionary WHERE valueId = app_info.`status`) AS statusName,
+        (SELECT valueName FROM data_dictionary WHERE valueId = app_info.`flatformId`) AS flatformName,
+        (SELECT versionNo FROM app_version WHERE id = app_info.`versionId`) AS versionNo
+    </sql>
+    <!--查询SQL语句where条件封装-->
+    <sql id="getListWhere">
+        <where>
+            <if test="softwareName != null and softwareName != ''">and softwareName like concat('%',#{softwareName},'%')</if>
+            <if test="status != null and status != -1">and status = #{status}</if>
+            <if test="flatformId != null and flatformId != -1">and flatformId = #{flatformId}</if>
+            <if test="categoryLevel1 != null and categoryLevel1 != -1">and categoryLevel1 = #{categoryLevel1}</if>
+            <if test="categoryLevel2 != null and categoryLevel2 != -1">and categoryLevel2 = #{categoryLevel2}</if>
+            <if test="categoryLevel3 != null and categoryLevel3 != -1">and categoryLevel3 = #{categoryLevel3}</if>
+        </where>
+    </sql>
+
+    <!--app详细信息列表(包含分类名,所属平台,状态,版本号)-->
+    <resultMap id="infoDetails" type="appInfo" autoMapping="true">
+        <id property="id" column="id"/>
+        <result property="category1Name" column="category1Name"/>
+        <result property="category2Name" column="category2Name"/>
+        <result property="category3Name" column="category3Name"/>
+        <result property="statusName" column="statusName"/>
+        <result property="flatformName" column="flatformName"/>
+        <result property="versionSize" column="versionNo"/>
+    </resultMap>
+</mapper>

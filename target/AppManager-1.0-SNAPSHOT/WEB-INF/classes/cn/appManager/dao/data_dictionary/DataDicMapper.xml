@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.appManager.dao.data_dictionary.DataDicMapper">
+    <!--查询对应类型下的数据集合-->
+    <select id="getDataDictionary" resultType="dataDictionary">
+        select * from data_dictionary where typeName=#{typeName}
+    </select>
+</mapper>

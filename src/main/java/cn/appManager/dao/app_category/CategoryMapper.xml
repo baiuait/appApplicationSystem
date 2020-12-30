@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.appManager.dao.app_category.CategoryMapper">
+    <!--查询一个分类下的所有分类集合-->
+    <select id="getCategoryByParentId" resultType="appCategory">
+        select * from app_category where parentId = #{parentId}
+    </select>
+</mapper>
